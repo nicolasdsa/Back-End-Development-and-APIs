@@ -31,24 +31,32 @@ app.get('/api/', function (req, res) {
 
 
 app.get('/api/:date', function(req, res){
-  console.log(req.params.date);
   
-  if(new Date(req.params.date / 1000) == "Invalid Date"){
-    res.json({error : "Invalid Date" })
-  }  
-  
-  if(req.params.date.indexOf('-') == -1){
-    const DateUTC = new Date(parseInt(req.params.date));
-    res.json({unix: parseInt(req.params.date), utc:     
+  if(req.params.date.indexOf('-') > -1){
+    if(new Date(req.params.date) == "Invalid Date"){
+     res.json({error : "Invalid Date" })
+    }  
+    const DateUnix =  Math.round(new   
+    Date(req.params.date).getTime());
+    const DateUTC = new Date(req.params.date);
+    res.json({unix: DateUnix, utc: 
     DateUTC.toUTCString()})
   }
+  
+  if(req.params.date.indexOf(' ') != -1){
+    const DateUnix =  Math.round(new   
+    Date(req.params.date).getTime());
+    res.json({unix: DateUnix, utc: new 
+    Date(req.params.date).toUTCString()});
+  }
 
-  const DateUnix =  Math.round(new   
-  Date(req.params.date).getTime());
-  const DateUTC = new Date(req.params.date);
-  res.json({unix: DateUnix, utc: DateUTC.toUTCString()})
-
- 
+  if(new Date(req.params.date / 1000) == "Invalid Date")  {
+    res.json({error : "Invalid Date" })
+  }  
+  const DateUTC = new Date(parseInt(req.params.date));
+  res.json({unix: parseInt(req.params.date), utc:     
+  DateUTC.toUTCString()})
+  
 })
 
 // listen for requests :)
