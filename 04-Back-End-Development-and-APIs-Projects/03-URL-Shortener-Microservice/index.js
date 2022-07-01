@@ -2,9 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const dns = require('dns');
 const bodyParser = require('body-parser');
-let valid = require('valid-url');
+let isUrl = require('is-url');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -31,8 +30,9 @@ app.post('/api/shorturl', (req, res) => {
   const { url } = req.body
 
 
-  if(!valid.isUri(url)){
+  if(!isUrl(url)){
     res.send({error: 'Invalid URL'});
+    return
   }
 
   count++;
@@ -40,7 +40,14 @@ app.post('/api/shorturl', (req, res) => {
   
   res.send({original_url: req.body.url, short_url: count});
   
-})
+});
+
+app.get('/api/shorturl/:id', (req, res) => {
+  const { id } = req.params
+  const url = urls[id];
+  res.redirect(url);
+  
+});
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
