@@ -51,18 +51,40 @@ app.get('/api/users', (req, res) => {
 })
 
 
-app.post('/api/users/:_id/exercises', (req, res) => {
-  Log.create({userId: req.params._id, description: req.body.description, duration: req.body.duration, date: req.body.date ? (new Date(req.body.date).toDateString()) : (new Date().toDateString())
+app.post('/api/users/:_id/exercises', async (req, res) => {
+  const createLog = await Log.create({userId: req.params._id, description: req.body.description, duration: req.body.duration, date: req.body.date ? (new Date(req.body.date).toDateString()) : (new Date().toDateString())
   })
+  const userData = await user.findById(req.params._id);
+  res.json({username: userData.username, description: createLog.description, duration: createLog.duration, date: createLog.date.toDateString(), _id: req.params._id});
 })
 
 app.get('/api/users/:_id/logs', async (req, res) => {
+   const limit = parseInt(req.query.limit);
+   const to = req.query.to ? new Date(req.query.to).getTime() : 9999999999999;
+   const from = req.query.from ? new Date(req.query.from).getTime() : 0;
+  
    const userData = await user.findById(req.params._id);
-  console.log(userData);
    const logDatacount = await Log.find({userId: req.params._id}).count({});
    const logData = await Log.find({userId: req.params._id}, 'description duration date -_id');
-  console.log(logData[0].date.toDateString());
-  res.json({username: userData.username, count: logDatacount, _id: userData._id, log: logData});
+  
+    const logDataFilter = logData.filter( item => {
+      return item.date.getTime() >= from && item.date.getTime() <= to
+    })
+
+  console.log(logDataFilter);
+  
+   const logDataFormat = logDataFilter.map(item => {
+     return {
+       description: item.description,
+       duration: item.duration,
+       date: item.date.toDateString()
+     }
+   })
+
+   const logDataLimit = limit ? logDataFormat.slice(0, 
+limit) : logDataFormat;
+  
+   res.json({username: userData.username, count: logDatacount, _id: userData._id, log: logDataLimit});
 })
 
 const listener = app.listen(process.env.PORT || 3000, () => {
