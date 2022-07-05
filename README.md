@@ -14,7 +14,9 @@
 <li>Utilização do Mongoose ODM para acelerar certos padrões de projeto</li>
 <li>Criação de projeto exemplo</li></ul>
 
-## :clock330: Módulo 4 - Projetos:
+## :white_check_mark: Módulo 4 - Projetos:
 <ul><li>Timestamp</li>
 <li>Request Header Parser</li>
-<li>URL Shortner</li></ul>
+<li>URL Shortner</li>
+<li>Exercise Tracker</li>
+<li>File Metadata Microservice</li></ul>
